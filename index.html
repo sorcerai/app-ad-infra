@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Ad Infrastructure | Enterprise Mobile App UA, SKAN & MMP Redundancy</title>
+  <meta name="description" content="Never lose another app scale window to SKAN schema desync, MMP webhook drops, or UAC learning resets. Hardened Tier-1 agency ad accounts for iOS and Android apps spending $50k-$1.5M+/mo.">
+  <link rel="canonical" href="https://app-ad-infra.pages.dev/">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: "#27F17B",
+              dark: "#1ecb66",
+              bg: "#080B10",
+              surface: "#0E1420",
+              card: "#141C2E",
+              border: "#1E293B",
+              text: "#E2E8F0",
+              textMuted: "#94A3B8",
+              cyan: "#00D2FF",
+              amber: "#F59E0B",
+              rose: "#FF4B4B"
+            }
+          },
+          fontFamily: {
+            sans: [""Plus Jakarta Sans"", "sans-serif"],
+            mono: [""JetBrains Mono"", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080B10;
+      color: #E2E8F0;
+      font-family: "Plus Jakarta Sans", sans-serif;
+    }
+    .glow-accent {
+      box-shadow: 0 0 25px rgba(39, 241, 123, 0.25);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 25px rgba(0, 210, 255, 0.25);
+    }
+  </style>
+
+  <script defer src="https://search-ops-beacon.aria-24d.workers.dev/analytics/v2.js" data-site="appadinfra.com"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      document.addEventListener("click", function(e) {
+        var target = e.target && e.target.closest ? e.target.closest("a[href*=\"wa.me\"]") : null;
+        if (target && window.searchOps && typeof window.searchOps.track === "function") {
+          window.searchOps.track("lead_confirmed");
+        }
+      });
+    });
+  </script>
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://app-ad-infra.pages.dev/#organization",
+        "name": "App Ad Infrastructure by AdsInfra",
+        "url": "https://app-ad-infra.pages.dev/",
+        "parentOrganization": {
+          "@type": "Organization",
+          "name": "AdsInfra",
+          "url": "https://adsinfra.io"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "desk@adsinfra.io",
+          "telephone": "+1-508-310-3096",
+          "contactType": "mobile app user acquisition desk"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://app-ad-infra.pages.dev/#website",
+        "url": "https://app-ad-infra.pages.dev/",
+        "name": "App Ad Infrastructure",
+        "publisher": { "@id": "https://app-ad-infra.pages.dev/#organization" }
+      },
+      {
+        "@type": "Service",
+        "@id": "https://app-ad-infra.pages.dev/#service",
+        "name": "Enterprise Mobile App User Acquisition & Attribution Infrastructure",
+        "provider": { "@id": "https://app-ad-infra.pages.dev/#organization" },
+        "serviceType": "Mobile App Ad Infrastructure, SKAN Redundancy & Invoiced Spend Lines",
+        "description": "Hardened Tier-1 agency ad accounts, SKAdNetwork conversion value monitoring, dual-egress MMP event streaming, and Google UAC learning protection for iOS & Android publishers.",
+        "areaServed": "Worldwide"
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://app-ad-infra.pages.dev/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does App Ad Infrastructure prevent SKAdNetwork crowd anonymity conversion value dropoffs?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We enforce minimum spend concentration thresholds per campaign ID and deploy pre-tested SKAN 4.0 coarse-to-fine value schemas, ensuring campaigns maintain Tier 2/3 anonymity and receive downstream subscription event postbacks."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can a Google Play or Apple App Store developer warning ban our paid advertising accounts?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, if your developer console credentials share administrative identities with your Google Ads MCC or Meta Business Manager. Our air-gapped architecture isolates developer ownership from media execution accounts."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What ad platforms are supported for mobile app scaling?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We provide pre-warmed Tier-1 agency accounts with invoiced spend lines for Apple Search Ads (ASA), Meta Advantage+ App Campaigns, Google Universal App Campaigns (UAC), TikTok App Install Campaigns, and AppLovin."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand selection:text-black">
+
+  <!-- Incident Radar Ticker -->
+  <aside aria-label="System status" class="bg-brand-surface border-b border-brand-border py-2 px-4 text-xs font-mono">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+        <span class="inline-block w-2 h-2 rounded-full bg-brand animate-pulse shrink-0"></span>
+        <span class="text-brand font-bold uppercase tracking-wider text-[11px]">LIVE APP UA RADAR:</span>
+        <span class="text-slate-300 truncate">SKAdNetwork 4.0 coarse postback rate: 94.2% normal • Apple Search Ads API latency: 182ms • Google UAC algo stability: nominal.</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-3 shrink-0 text-slate-400">
+        <span>SLA: &lt;4h Deployment</span>
+        <span>•</span>
+        <span>Unlimited Spend</span>
+        <span>•</span>
+        <span class="text-brand font-semibold">Pre-Warmed Lines</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navigation -->
+  <header class="sticky top-0 z-50 border-b border-brand-border bg-[#080B10]/95 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-brand flex items-center justify-center font-mono font-bold text-black text-xs">UA</div>
+        <span class="font-bold text-white text-base sm:text-lg tracking-tight">App<span class="text-brand">AdInfra</span></span>
+      </a>
+      <span class="text-xs uppercase tracking-widest font-mono text-brand-textMuted border-l border-brand-border pl-3 ml-1 hidden sm:inline">Mobile App Infrastructure</span>
+    </div>
+    <nav class="flex items-center gap-4 text-xs sm:text-sm font-mono">
+      <a href="calculator.html" class="text-slate-300 hover:text-brand transition-colors hidden md:inline">CPI Calculator</a>
+      <a href="skan-audit.html" class="text-slate-300 hover:text-brand transition-colors hidden sm:inline">SKAN Audit</a>
+      <a href="resources/index.html" class="text-slate-300 hover:text-brand transition-colors">Resources</a>
+      <a href="https://wa.me/15083103096?text=Hi%2C%20I%20need%20enterprise%20mobile%20app%20UA%20infrastructure." target="_blank" rel="noopener" class="px-3.5 py-1.5 rounded-lg bg-brand text-black font-semibold text-xs uppercase tracking-wider hover:bg-brand-dark transition-colors font-mono">
+        Request Access
+      </a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-grow">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-20 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-mono font-bold uppercase tracking-wider mb-6">
+        <span>⚡ Enterprise App User Acquisition & Attribution Shield</span>
+      </div>
+      
+      <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 max-w-4xl mx-auto">
+        Never Lose Another App Scale Window to <span class="text-brand">SKAN Schema Desync</span> or <span class="text-brand-cyan">MMP Outages</span>
+      </h1>
+      
+      <p class="text-slate-400 text-base sm:text-lg max-w-3xl mx-auto mb-10 leading-relaxed">
+        Post-ATT app growth is violently fragile. We deploy air-gapped Tier-1 agency ad accounts, automated SKAdNetwork 4.0/5.0 conversion value monitors, and dual-egress MMP event failovers for iOS and Android publishers spending $50k to $1.5M+/month.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <a href="https://wa.me/15083103096?text=Hi%2C%20I%20am%20spending%20%2450k%2B%2Fmo%20on%20mobile%20app%20UA%20and%20need%20infrastructure." target="_blank" rel="noopener" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand text-black font-bold text-sm uppercase tracking-wider hover:bg-brand-dark transition-all duration-200 shadow-lg glow-accent font-mono flex items-center justify-center gap-2">
+          <span>Deploy App Infrastructure on WhatsApp</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="calculator.html" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-surface border border-brand-border hover:border-brand/40 text-white font-semibold text-sm transition-all duration-200 font-mono">
+          Run CPI Loss Calculator &rarr;
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 border-t border-brand-border/60">
+        <div class="p-4 rounded-xl bg-brand-surface border border-brand-border/50 text-left">
+          <div class="text-xs font-mono text-brand mb-1">PROVISIONING SLA</div>
+          <div class="text-lg font-bold text-white">&lt; 4 Hours</div>
+          <div class="text-xs text-slate-400">Apple, Meta, Google, TikTok</div>
+        </div>
+        <div class="p-4 rounded-xl bg-brand-surface border border-brand-border/50 text-left">
+          <div class="text-xs font-mono text-brand-cyan mb-1">DAILY SPEND LIMITS</div>
+          <div class="text-lg font-bold text-white">Unlimited Day 1</div>
+          <div class="text-xs text-slate-400">Pre-warmed invoiced lines</div>
+        </div>
+        <div class="p-4 rounded-xl bg-brand-surface border border-brand-border/50 text-left">
+          <div class="text-xs font-mono text-amber-400 mb-1">ATTRIBUTION GUARD</div>
+          <div class="text-lg font-bold text-white">Dual-Egress Proxy</div>
+          <div class="text-xs text-slate-400">Zero MMP single point of failure</div>
+        </div>
+        <div class="p-4 rounded-xl bg-brand-surface border border-brand-border/50 text-left">
+          <div class="text-xs font-mono text-brand mb-1">STORE SEPARATION</div>
+          <div class="text-lg font-bold text-white">100% Air-Gapped</div>
+          <div class="text-xs text-slate-400">Developer IDs isolated from ads</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Failure Modes Section -->
+    <section class="py-16 bg-brand-surface border-y border-brand-border">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <h2 class="text-xs font-mono font-bold text-brand uppercase tracking-wider mb-2">Technical Vulnerability Analysis</h2>
+          <p class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Why High-Spend Mobile App Campaigns Break
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-mono font-bold text-sm mb-4">01</div>
+              <h3 class="text-lg font-bold text-white mb-2">SKAN Crowd Anonymity Blackouts</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                Fragmenting spend across ad sets drops campaign volume below Apple Tier 2 thresholds. Fine-grained conversion values are suppressed, returning null postbacks and blinding ROAS bidding engines.
+              </p>
+            </div>
+            <div class="text-xs font-mono text-rose-400">Failure Cost: 30–50% CPA Inflation</div>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-mono font-bold text-sm mb-4">02</div>
+              <h3 class="text-lg font-bold text-white mb-2">MMP Webhook Attribution Drops</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                When an AppsFlyer, Adjust, or Branch SDK token or postback webhook desyncs, paid installs are misattributed as organic. Ad network algorithms conclude traffic failed, driving blended CPIs up by 40%+.
+              </p>
+            </div>
+            <div class="text-xs font-mono text-amber-400">Failure Cost: Attribution Black Hole</div>
+          </div>
+
+          <div class="p-6 rounded-2xl bg-brand-bg border border-brand-border flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center font-mono font-bold text-sm mb-4">03</div>
+              <h3 class="text-lg font-bold text-white mb-2">Google UAC 14-Day Learning Resets</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                A single credit card velocity decline or 25%+ budget shift triggers a complete Universal App Campaign learning reset, wiping out two weeks of machine-learning optimization on Android.
+              </p>
+            </div>
+            <div class="text-xs font-mono text-brand-cyan">Failure Cost: 14 Days Idle Burn</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="py-20 max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <h2 class="text-xs font-mono font-bold text-brand uppercase tracking-wider mb-2">Architectural Blueprint</h2>
+        <p class="text-3xl font-extrabold text-white tracking-tight mb-4">
+          The 3-Tier Multi-Channel App Citadel
+        </p>
+        <p class="text-slate-400 text-sm">
+          Strict separation between App Store developer identities, measurement event streaming, and media-buying execution accounts.
+        </p>
+      </div>
+
+      <div class="space-y-6 max-w-4xl mx-auto">
+        <div class="p-6 rounded-2xl bg-brand-surface border border-brand-border">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="px-2.5 py-0.5 rounded bg-brand/10 text-brand font-mono font-bold text-xs uppercase">Tier 1</span>
+            <h3 class="text-base font-bold text-white">Developer Console Sanctuary (Cold Storage)</h3>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Apple Developer Program & Google Play Console accounts operate under isolated corporate legal entities. Zero agency media buyers or external tools ever receive direct credentials. Access is restricted to read-only partner shares.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-brand-surface border border-brand-border">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="px-2.5 py-0.5 rounded bg-brand-cyan/10 text-brand-cyan font-mono font-bold text-xs uppercase">Tier 2</span>
+            <h3 class="text-base font-bold text-white">Dual-Egress Event Streaming Proxy</h3>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            In-app purchase and registration telemetry flows through an air-gapped proxy that simultaneously sends signals to your primary MMP and directly to Meta CAPI and Google Ads API. If the MMP endpoint drops, backup delivery triggers automatically.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-brand-surface border border-brand-border">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="px-2.5 py-0.5 rounded bg-brand/10 text-brand font-mono font-bold text-xs uppercase">Tier 3</span>
+            <h3 class="text-base font-bold text-white">Whitelisted Tier-1 Execution Accounts</h3>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Directly provisioned agency ad accounts with established invoicing lines for Apple Search Ads, Meta Advantage+ App, Google UAC, and TikTok App Campaigns. Spend $50K+/day on Day 1 without payment decline throttles.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Operational CTA Section -->
+    <section class="py-16 bg-brand-surface border-t border-brand-border">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-4">
+          Scale Mobile UA Without Attribution Blindness
+        </h2>
+        <p class="text-slate-400 text-sm max-w-xl mx-auto mb-8">
+          Speak with our lead mobile infrastructure architect to review your SKAN conversion schema and provision redundant Tier-1 accounts within 4 hours.
+        </p>
+        <a href="https://wa.me/15083103096?text=Hi%2C%20I%20want%20to%20discuss%20mobile%20app%20UA%20infrastructure%20and%20SKAN%20audits." target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-brand text-black font-mono font-bold text-sm uppercase tracking-wider hover:bg-brand-dark transition-all shadow-lg glow-accent">
+          <span>Connect with Mobile Architect on WhatsApp</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-brand-border py-8 text-center text-xs text-slate-500 font-mono">
+    <p>&copy; 2026 App Ad Infrastructure &bull; An enterprise intelligence initiative by <a href="https://adsinfra.io" class="text-brand">AdsInfra</a>.</p>
+  </footer>
+
+</body>
+</html>

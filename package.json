@@ -1,0 +1,8 @@
+{
+  "name": "app-ad-infra",
+  "version": "1.0.0",
+  "description": "Enterprise App & Mobile App Ad Infrastructure for iOS & Android User Acquisition",
+  "scripts": {
+    "deploy": "wrangler pages deploy ."
+  }
+}
