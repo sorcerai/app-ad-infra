@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://app-ad-infra.pages.dev/sitemap.xml
+Sitemap: https://adsinfraforapps.com/sitemap.xml
