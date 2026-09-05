@@ -76,24 +76,24 @@
     <div class="p-6 sm:p-8 rounded-2xl bg-brand-surface border border-brand-border space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
-          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Monthly Paid Media Spend ($)</label>
-          <input type="number" id="monthlySpend" value="150000" min="10000" step="5000" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
+          <label for="monthlySpend" class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Monthly Paid Media Spend ($)</label>
+          <input type="number" id="monthlySpend" aria-label="Monthly Paid Media Spend ($)" value="150000" min="10000" step="5000" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Target Baseline CPI ($)</label>
-          <input type="number" id="targetCpi" value="8.50" min="1" step="0.5" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
+          <label for="targetCpi" class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Target Baseline CPI ($)</label>
+          <input type="number" id="targetCpi" aria-label="Target Baseline CPI ($)" value="8.50" min="1" step="0.5" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Primary App Category</label>
-          <select id="appCategory" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none">
+          <label for="appCategory" class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Primary App Category</label>
+          <select id="appCategory" aria-label="Primary App Category" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none">
             <option value="subscription" selected>Subscription / Health / Utility ($60-$120 Annual LTV)</option>
             <option value="gaming">Mobile Gaming / IAP ($25-$80 LTV)</option>
             <option value="fintech">Fintech / Banking ($150-$400 LTV)</option>
           </select>
         </div>
         <div>
-          <label class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Estimated Outage Duration (Days)</label>
-          <input type="number" id="outageDays" value="7" min="1" max="30" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
+          <label for="outageDays" class="block text-xs font-mono text-slate-300 uppercase tracking-wider mb-2">Estimated Outage Duration (Days)</label>
+          <input type="number" id="outageDays" aria-label="Estimated Outage Duration (Days)" value="7" min="1" max="30" class="w-full px-4 py-3 rounded-lg bg-brand-card border border-brand-border text-white font-mono focus:border-brand focus:outline-none" />
         </div>
       </div>
 
