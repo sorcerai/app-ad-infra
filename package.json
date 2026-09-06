@@ -4,6 +4,7 @@
   "description": "Enterprise App & Mobile App Ad Infrastructure for iOS & Android User Acquisition",
   "scripts": {
     "deploy": "wrangler pages deploy .",
-    "submit:indexnow": "node scripts/indexnow-submit.mjs"
+    "submit:indexnow": "node scripts/indexnow-submit.mjs",
+    "postdeploy": "npm run submit:indexnow"
   }
 }
