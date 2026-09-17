@@ -153,7 +153,7 @@
       <ul class="list-disc pl-5 space-y-2 text-slate-300">
         <li><strong>Fine-Grained (0–63) Loss:</strong> Instead of receiving full purchase value tiers, Apple returns only coarse values (<em>low, medium, high</em>) or completely nullifies the conversion value.</li>
         <li><strong>Window 2 &amp; 3 Blackouts:</strong> Days 3–7 and 8–35 retention postbacks are omitted, starving ad algorithms of long-term subscription trial-to-paid conversion signals.</li>
-        <li><strong>Infrastructure Solution:</strong> Implement strict minimum spend concentration gates ($1,500+/day per active SKAN campaign ID) and consolidate creative tests inside air-gapped sandbox ad accounts prior to scaling main lines.</li>
+        <li><strong>Infrastructure Solution:</strong> Implement strict minimum spend concentration gates ($1,500+/day per active SKAN campaign ID) and consolidate creative tests inside segregated sandbox ad accounts prior to scaling main lines.</li>
       </ul>
 
       <h2 class="text-xl font-bold text-white pt-4">2. MMP Attribution Redundancy: AppsFlyer, Adjust &amp; Branch SDK Failovers</h2>
@@ -161,7 +161,7 @@
         Reliance on a single MMP server-to-server webhook endpoint creates an unmitigated single point of failure. If an SDK version update causes auth token desynchronization, ad platforms fail to receive real-time purchase conversions:
       </p>
       <p>
-        Enterprise mobile publishers deploy a <strong>dual-egress event streaming proxy</strong>. Every client-side in-app event is delivered simultaneously to the primary MMP and an air-gapped first-party event warehouse. If the MMP endpoint reports latency or 5xx drops, fallback webhooks instantly re-route signals directly to Meta Conversions API (CAPI) and Google Ads Measurement Protocol.
+        Enterprise mobile publishers deploy a <strong>dual-egress event streaming proxy</strong>. Every client-side in-app event is delivered simultaneously to the primary MMP and an segregated first-party event warehouse. If the MMP endpoint reports latency or 5xx drops, fallback webhooks instantly re-route signals directly to Meta Conversions API (CAPI) and Google Ads Measurement Protocol.
       </p>
 
       <h2 class="text-xl font-bold text-white pt-4">3. Apple Search Ads (ASA) Custom Product Page (CPP) Failover</h2>
@@ -175,7 +175,7 @@
       <div class="p-6 rounded-2xl bg-brand/5 border border-brand/30 my-8">
         <h3 class="text-base font-bold text-white mb-2">Deploy Enterprise Mobile App Ad Infrastructure</h3>
         <p class="text-xs text-slate-400 mb-4">
-          AdsInfra architects air-gapped Tier-1 agency ad accounts for Apple Search Ads, Meta Advantage+ App, and Google UAC with pre-warmed credit lines and automated SKAN schema monitoring.
+          AdsInfra architects segregated Tier-1 agency ad accounts for Apple Search Ads, Meta Advantage+ App, and Google UAC with pre-warmed credit lines and automated SKAN schema monitoring.
         </p>
         <a href="https://wa.me/15083103096?text=Hi%2C%20we%20spend%20%2450k%2B%2Fmo%20on%20mobile%20app%20UA%20and%20need%20hardened%20ad%20infrastructure." target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-brand-dark transition-colors">
           <span>Request Mobile App UA Architecture</span>
