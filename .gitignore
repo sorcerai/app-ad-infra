@@ -5,3 +5,6 @@ dist/
 
 # Local credentials (push-indexer deploy key). Never commit.
 .env
+
+# Python browser-test cache.
+__pycache__/
