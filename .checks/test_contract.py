@@ -50,6 +50,7 @@ class WhatsAppContractTests(unittest.TestCase):
         # Never load the production SDK or send analytics during CI.
         context.route("**/analytics/v2.js", lambda route: route.abort())
         context.route("**/api/analytics/event**", lambda route: route.abort())
+        context.route("**/api/intent", lambda route: route.abort())
         # Exercise real popup navigation without contacting WhatsApp.
         context.route(
             "https://wa.me/**",
