@@ -57,7 +57,7 @@
           "url": "https://adsinfra.io"
         },
         "datePublished": "2026-09-04",
-        "dateModified": "2026-09-04"
+        "dateModified": "2026-09-24"
       },
       {
         "@type": "FAQPage",
@@ -97,7 +97,7 @@
     </div>
     <nav class="flex items-center gap-4 text-sm font-mono">
       <a href="/" class="text-slate-300 hover:text-brand transition-colors hidden sm:inline-flex min-h-[28px] items-center">Verticals</a>
-      <a href="/" class="text-brand font-bold inline-flex items-center min-h-[28px] py-1 px-1">Resources</a>
+      <a href="/resources/" class="text-brand font-bold inline-flex items-center min-h-[28px] py-1 px-1">Resources</a>
       <a href="https://wa.me/15083103096?text=Hi%2C%20I%20need%20mobile%20app%20UA%20infrastructure%20and%20SKAN%20redundancy." target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-brand text-black font-semibold text-xs uppercase tracking-wider hover:bg-brand-dark transition-colors">
         Speak With Specialist
       </a>
@@ -108,7 +108,7 @@
     <div class="text-xs font-mono text-slate-500 mb-6 flex items-center gap-2">
       <a href="/" class="hover:text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">Index</a>
       <span>/</span>
-      <a href="/" class="hover:text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">Resources</a>
+      <a href="/resources/" class="hover:text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">Resources</a>
       <span>/</span>
       <span class="text-slate-300">Mobile App UA Playbook</span>
     </div>
@@ -126,7 +126,7 @@
       <span>•</span>
       <span>Reading Time: 13 Min</span>
       <span>•</span>
-      <span>Updated: Q3 2026</span>
+      <span>Last verified: 2026-09-24</span>
     </div>
 
     <div class="prose prose-invert max-w-none text-slate-300 text-sm sm:text-base leading-relaxed space-y-6">
@@ -172,6 +172,21 @@
         Automated CPP monitoring scripts must poll App Store Connect APIs every 15 minutes, automatically pausing ASA ad groups if a target CPP fails to return HTTP 200 verification.
       </p>
 
+      <h2 class="text-xl font-bold text-white pt-4">4. SKAdNetwork ROAS Reporting Through Coarse Conversion Values</h2>
+      <p>
+        The query behind most SKAdNetwork research traffic is a reporting question: <strong>how do you measure ROAS when Apple only returns low, medium, or high?</strong> Coarse values collapse your revenue distribution into three buckets, so the standard fix is to bind each coarse value to a hard funnel milestone &mdash; for example, low = trial started, medium = trial active at day 7, high = converted to paid. With milestones fixed, coarse postbacks still produce a directional ROAS per campaign cohort, and the <a href="/skan-audit" class="text-brand hover:underline">SKAN schema audit</a> verifies the mapping before spend scales.
+      </p>
+      <p>
+        Two rules keep coarse-value ROAS honest. First, never change what a coarse value means mid-flight: redefining &ldquo;high&rdquo; from &ldquo;trial&rdquo; to &ldquo;paid&rdquo; silently breaks every historical comparison. Second, model ROAS at the campaign-ID level, not the creative level &mdash; creative-level cohorts rarely clear crowd anonymity, so their postbacks arrive null and drag the blended number down.
+      </p>
+
+      <h2 class="text-xl font-bold text-white pt-4">5. The SKAdNetwork Solution Stack: Schema, Redundancy, and Account Isolation</h2>
+      <p>
+        A complete SKAdNetwork solution has three layers. <strong>Schema:</strong> a 0&ndash;63 conversion value map with coarse fallbacks bound to funnel milestones, validated by audit before every app release. <strong>Redundancy:</strong> dual-egress event streaming so MMP outages never blind ad platforms (section 2). <strong>Account isolation:</strong> SKAN campaign IDs live in dedicated ad accounts with consolidated spend, so one product&rsquo;s creative testing cannot drag another product&rsquo;s cohorts below the anonymity threshold.
+      </p>
+      <p>
+        Teams that run all three layers stop treating SKAdNetwork as a reporting problem and start treating it as infrastructure &mdash; which is exactly what it is once iOS is a material share of revenue.
+      </p>
       <div class="p-6 rounded-2xl bg-brand/5 border border-brand/30 my-8">
         <h3 class="text-base font-bold text-white mb-2">Deploy Enterprise Mobile App Ad Infrastructure</h3>
         <p class="text-xs text-slate-400 mb-4">
