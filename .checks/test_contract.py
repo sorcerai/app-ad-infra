@@ -185,7 +185,7 @@ class WhatsAppContractTests(unittest.TestCase):
                     try:
                         script = "window.__intents = [];"
                         if mode == "success":
-                            script += "navigator.sendBeacon = (url, blob) => { blob.text().then(text => window.__intents.push({url, payload: JSON.parse(text)})); return true; };"
+                            script += "navigator.sendBeacon = (url, blob) => { const intent = {url}; window.__intents.push(intent); blob.text().then(text => { intent.payload = JSON.parse(text); }); return true; };"
                         elif mode == "throw":
                             script += "navigator.sendBeacon = () => { throw new Error('Unavailable'); };"
                         else:
@@ -204,7 +204,7 @@ class WhatsAppContractTests(unittest.TestCase):
                         self.assertEqual(popup.url, href)
                         popup.close()
                         if mode == "success":
-                            page.wait_for_function("window.__intents.length === 1")
+                            page.wait_for_function("window.__intents.length === 1 && 'payload' in window.__intents[0]")
                             intent = page.evaluate("window.__intents[0]")
                             self.assertEqual(intent["url"], "https://adsinfra.io/api/intent")
                             self.assertEqual(intent["payload"], {"cta_id": "whatsapp", "site": "app", "path": "/" + path, "utm_source": "x" * 120, "utm_campaign": "review"})
