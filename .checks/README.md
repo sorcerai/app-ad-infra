@@ -37,7 +37,7 @@ only that directory. Wrangler's configured default output is also `.public-dist`
 Do not run `wrangler pages deploy .`: an explicit root argument bypasses the export.
 Review allowlist additions as public content. Tests, CI, source helpers, repository
 configuration and credentials must remain outside the allowlist. The exporter
-refuses missing or symlinked sources and unexpected preexisting output files.
+refuses dot-prefixed allowlist path segments, missing or symlinked sources and unexpected preexisting output files.
 Run `node --test .checks/test_export.mjs` for executable export checks.
 The existing postdeploy IndexNow hook remains unchanged; building/testing does
 not invoke it or publish anything.
