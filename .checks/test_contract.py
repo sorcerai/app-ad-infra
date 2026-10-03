@@ -173,6 +173,7 @@ class WhatsAppContractTests(unittest.TestCase):
             self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"), viewport[0])
             self.assertEqual(errors, [])
             context.close()
+
     def test_central_intent_preserves_navigation_and_bounds_attribution(self):
         # Execute the restored public beacon, intercepting every external call.
         paths = ("index.html", "calculator.html", "skan-audit.html",
