@@ -8,3 +8,5 @@ dist/
 
 # Python browser-test cache.
 __pycache__/
+
+.public-dist/

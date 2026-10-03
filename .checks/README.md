@@ -28,3 +28,16 @@ service scope. No customer configuration was inspected. Dates in the copy record
 source review; deployment has not occurred. Related audit-tool promotion is held
 pending claim review; its public route remains available. This PR changes no offer,
 recipient, analytics access or tracking implementation.
+
+## Public deployment export
+
+Run `npm run build` to create `.public-dist` from the explicit
+`scripts/public-assets.json` allowlist. `npm run deploy` builds first and uploads
+only that directory. Wrangler's configured default output is also `.public-dist`.
+Do not run `wrangler pages deploy .`: an explicit root argument bypasses the export.
+Review allowlist additions as public content. Tests, CI, source helpers, repository
+configuration and credentials must remain outside the allowlist. The exporter
+refuses dot-prefixed allowlist path segments, missing or symlinked sources and unexpected preexisting output files.
+Run `node --test .checks/test_export.mjs` for executable export checks.
+The existing postdeploy IndexNow hook remains unchanged; building/testing does
+not invoke it or publish anything.
