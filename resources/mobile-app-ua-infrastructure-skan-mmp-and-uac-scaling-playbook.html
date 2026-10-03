@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mobile App UA Ad Infrastructure: SKAdNetwork 4.0/5.0, MMP Redundancy & UAC Learning Protection</title>
-  <meta name="description" content="Technical operational runbook for mobile app user acquisition (UA) teams and subscription app publishers spending $75k-$1.5M+/mo. SKAN conversion schema audits, MMP attribution failover, and Google UAC learning resets.">
+  <title>SKAdNetwork ROAS Audit for iOS App Campaigns</title>
+  <meta name="description" content="Audit SKAN revenue mappings, delayed postbacks and Google Ads integration before changing iOS budgets. Includes a worked example and a launch checklist.">
   <link rel="canonical" href="https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,52 +38,60 @@
   <script defer src="https://search-ops-beacon.aria-24d.workers.dev/analytics/v2.js" data-site="adsinfraforapps.com"></script>
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "TechArticle",
-        "@id": "https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook.html#article",
-        "headline": "Mobile App UA Ad Infrastructure: SKAdNetwork 4.0/5.0, MMP Redundancy & UAC Learning Protection",
-        "description": "An operational runbook for mobile app UA leads, subscription app publishers, and gaming media buyers navigating SKAN 4.0 crowd anonymity thresholds, MMP attribution desync, and Apple Search Ads scaling.",
-        "author": {
-          "@type": "Organization",
-          "name": "Ad Spend & Risk Index by AdsInfra",
-          "url": "https://ad-spend-index.pages.dev/"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "AdsInfra",
-          "url": "https://adsinfra.io"
-        },
-        "datePublished": "2026-09-04",
-        "dateModified": "2026-09-04"
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook#article",
+      "headline": "SKAdNetwork ROAS audit for iOS app campaigns",
+      "description": "Audit SKAN revenue mappings, delayed postbacks and Google Ads integration before changing iOS budgets. Includes a worked example and a launch checklist.",
+      "author": {
+        "@type": "Organization",
+        "name": "Ad Spend & Risk Index by AdsInfra",
+        "url": "https://ad-spend-index.pages.dev/"
       },
-      {
-        "@type": "FAQPage",
-        "@id": "https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook.html#faq",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "Why do SKAdNetwork crowd anonymity thresholds wipe out fine-grained conversion values?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Apple SKAdNetwork assigns install postbacks to one of four crowd anonymity tiers (0 to 3) based on campaign volume. If a campaign fails to hit tier 2 or 3, Apple sends only coarse-grained conversion values (low, medium, high) or null, preventing Meta and TikTok from optimizing for downstream in-app purchase revenue."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does an MMP attribution desynchronization affect blended Cost Per Install (CPI)?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "When an MMP SDK token or postback webhook expires or rate-limits, up to 35% of paid installs are misattributed as organic. Ad network algorithms conclude their traffic failed to convert, artificially bidding higher and driving blended CPIs up by 40% to 120%."
-            }
+      "publisher": {
+        "@type": "Organization",
+        "name": "AdsInfra",
+        "url": "https://adsinfra.io"
+      },
+      "datePublished": "2026-09-04",
+      "mainEntityOfPage": "https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://adsinfraforapps.com/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can I calculate ROAS from coarse conversion values",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can derive an estimate if the values map to revenue, or apply an explicitly validated revenue model to milestones. Explain the mapping and uncertainty. “High” has no universal monetary value."
           }
-        ]
-      }
-    ]
-  }
-  </script>
+        },
+        {
+          "@type": "Question",
+          "name": "Should every report agree with my MMP",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Start by comparing scope, attribution logic, cohort age and revenue definitions. A mismatch is a diagnostic clue. It is not enough on its own to identify which implementation is wrong."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does an agency ad account improve SKAN data quality",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An account arrangement may change access, funding and operational responsibility. Evaluate those terms separately from the attribution implementation. Ask for evidence of the actual schema and supported data flow before accepting any measurement claim."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body class="bg-brand-bg text-brand-text font-sans antialiased selection:bg-brand selection:text-black">
 
@@ -93,11 +101,11 @@
         <div class="w-6 h-6 rounded bg-brand flex items-center justify-center font-mono font-bold text-black text-xs">AI</div>
         <span class="font-bold text-white text-base tracking-tight">App<span class="text-brand">AdInfra</span></span>
       </a>
-      <span class="text-xs uppercase tracking-widest font-mono text-brand-textMuted border-l border-brand-border pl-3 ml-1 hidden sm:inline">Mobile App UA Runbook</span>
+      <span class="text-xs uppercase tracking-widest font-mono text-brand-textMuted border-l border-brand-border pl-3 ml-1 hidden sm:inline">SKAN ROAS Audit</span>
     </div>
     <nav class="flex items-center gap-4 text-sm font-mono">
       <a href="/" class="text-slate-300 hover:text-brand transition-colors hidden sm:inline-flex min-h-[28px] items-center">Verticals</a>
-      <a href="/" class="text-brand font-bold inline-flex items-center min-h-[28px] py-1 px-1">Resources</a>
+      <a href="/resources/" class="text-brand font-bold inline-flex items-center min-h-[28px] py-1 px-1">Resources</a>
       <a href="https://wa.me/15083103096?text=Hi%2C%20I%20need%20mobile%20app%20UA%20infrastructure%20and%20SKAN%20redundancy." target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-brand text-black font-semibold text-xs uppercase tracking-wider hover:bg-brand-dark transition-colors">
         Speak With Specialist
       </a>
@@ -105,85 +113,84 @@
   </header>
 
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <div class="text-xs font-mono text-slate-500 mb-6 flex items-center gap-2">
-      <a href="/" class="hover:text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">Index</a>
-      <span>/</span>
-      <a href="/" class="hover:text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">Resources</a>
-      <span>/</span>
-      <span class="text-slate-300">Mobile App UA Playbook</span>
-    </div>
-
-    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-mono font-bold uppercase tracking-wider mb-4">
-      Vertical Fanout // Mobile Apps & UA Operations
-    </div>
-
-    <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-6">
-      Mobile App UA Ad Infrastructure: SKAdNetwork 4.0/5.0, MMP Redundancy &amp; UAC Learning Protection
-    </h1>
-
-    <div class="flex items-center gap-4 text-xs font-mono text-slate-400 pb-8 border-b border-brand-border mb-8">
-      <span>Target Spend: $75K – $1.5M+/Mo</span>
-      <span>•</span>
-      <span>Reading Time: 13 Min</span>
-      <span>•</span>
-      <span>Updated: Q3 2026</span>
-    </div>
-
-    <div class="prose prose-invert max-w-none text-slate-300 text-sm sm:text-base leading-relaxed space-y-6">
-      <p class="text-lg text-slate-200 font-medium">
-        Mobile application user acquisition operates under extreme post-ATT data opacity. Scaling subscription apps, mobile gaming titles, and cross-platform tools past $25,000 daily spend requires isolating fragile Mobile Measurement Partner (MMP) postbacks, maintaining crowd anonymity volume floors across SKAdNetwork 4.0/5.0, and preventing catastrophic Google Universal App Campaign (UAC) learning resets.
-      </p>
-
-      <div class="p-5 rounded-xl bg-brand-surface border border-brand-border my-6">
-        <h2 class="text-sm font-mono font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-brand"></span>
-          The Mobile UA Single-Point-of-Failure Audit
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono pt-2">
-          <div><span class="text-slate-500">MMP Attribution Hold:</span> <span class="text-white font-bold">+45% blended CPI</span></div>
-          <div><span class="text-slate-500">SKAN Coarse Downgrade:</span> <span class="text-white font-bold">ROAS Blindness</span></div>
-          <div><span class="text-slate-500">UAC Learning Reset:</span> <span class="text-white font-bold">14-Day Algo Shock</span></div>
-        </div>
-      </div>
-
-      <h2 class="text-xl font-bold text-white pt-4">1. The SKAdNetwork 4.0/5.0 Crowd Anonymity Trap</h2>
-      <p>
-        In Apple’s SKAdNetwork architecture, postbacks are conditioned on privacy thresholds called <strong>crowd anonymity</strong>. When media teams fragment spend across too many ad sets or creative variants, individual campaign cohorts fall below Tier 2 anonymity:
-      </p>
-      <ul class="list-disc pl-5 space-y-2 text-slate-300">
-        <li><strong>Fine-Grained (0–63) Loss:</strong> Instead of receiving full purchase value tiers, Apple returns only coarse values (<em>low, medium, high</em>) or completely nullifies the conversion value.</li>
-        <li><strong>Window 2 &amp; 3 Blackouts:</strong> Days 3–7 and 8–35 retention postbacks are omitted, starving ad algorithms of long-term subscription trial-to-paid conversion signals.</li>
-        <li><strong>Infrastructure Solution:</strong> Implement strict minimum spend concentration gates ($1,500+/day per active SKAN campaign ID) and consolidate creative tests inside segregated sandbox ad accounts prior to scaling main lines.</li>
-      </ul>
-
-      <h2 class="text-xl font-bold text-white pt-4">2. MMP Attribution Redundancy: AppsFlyer, Adjust &amp; Branch SDK Failovers</h2>
-      <p>
-        Reliance on a single MMP server-to-server webhook endpoint creates an unmitigated single point of failure. If an SDK version update causes auth token desynchronization, ad platforms fail to receive real-time purchase conversions:
-      </p>
-      <p>
-        Enterprise mobile publishers deploy a <strong>dual-egress event streaming proxy</strong>. Every client-side in-app event is delivered simultaneously to the primary MMP and an segregated first-party event warehouse. If the MMP endpoint reports latency or 5xx drops, fallback webhooks instantly re-route signals directly to Meta Conversions API (CAPI) and Google Ads Measurement Protocol.
-      </p>
-
-      <h2 class="text-xl font-bold text-white pt-4">3. Apple Search Ads (ASA) Custom Product Page (CPP) Failover</h2>
-      <p>
-        Custom Product Pages (CPPs) allow ASA campaigns to align keyword intent with dedicated App Store screenshot sequences. However, during weekly app version updates, unreleased CPP IDs cause ASA ads to fall back to default store metadata, dropping tap-to-install rates by up to 50%.
-      </p>
-      <p>
-        Automated CPP monitoring scripts must poll App Store Connect APIs every 15 minutes, automatically pausing ASA ad groups if a target CPP fails to return HTTP 200 verification.
-      </p>
-
-      <div class="p-6 rounded-2xl bg-brand/5 border border-brand/30 my-8">
-        <h3 class="text-base font-bold text-white mb-2">Deploy Enterprise Mobile App Ad Infrastructure</h3>
-        <p class="text-xs text-slate-400 mb-4">
-          AdsInfra architects segregated Tier-1 agency ad accounts for Apple Search Ads, Meta Advantage+ App, and Google UAC with pre-warmed credit lines and automated SKAN schema monitoring.
-        </p>
-        <a href="https://wa.me/15083103096?text=Hi%2C%20we%20spend%20%2450k%2B%2Fmo%20on%20mobile%20app%20UA%20and%20need%20hardened%20ad%20infrastructure." target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-brand-dark transition-colors">
-          <span>Request Mobile App UA Architecture</span>
-          <span>&rarr;</span>
-        </a>
-      </div>
-    </div>
-  </article>
+<a class="inline-flex py-3 underline text-[#27F17B]" href="/resources/">Resources</a>
+<h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight mb-8">SKAdNetwork ROAS audit for iOS app campaigns</h1>
+<div class="text-slate-300 text-sm sm:text-base leading-relaxed space-y-6"><p>Before cutting an iOS campaign because SKAdNetwork ROAS looks low, check what the report has actually measured. A revenue bucket, a trial-start milestone and a missing conversion value can appear in the same dataset. They need different treatment.</p>
+<p>SKAdNetwork provides privacy-preserving attribution signals. Its conversion values are codes defined by your app’s schema, rather than a ready-made revenue ledger. A defensible ROAS calculation needs that schema, a stated revenue horizon and matching campaign spend. Apple documents the conversion-value fields and the conditions under which they appear in its <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/storekit/identifying-the-parameters-in-install-validation-postbacks">postback parameter reference</a>.</p>
+<p>This audit is for teams already running iOS acquisition through an ad platform and a mobile measurement partner, or MMP, or Google Analytics for Firebase. It produces a measurement decision: use the number, wait for it to mature, or repair the implementation before using it to change budgets.</p>
+<h2 class="text-xl font-bold text-white pt-6">Start by naming the ROAS you mean</h2>
+<p>Write the calculation in one sentence. For example: “Estimated first-window revenue represented by winning SKAN postbacks for this campaign cohort, divided by its associated media spend.”</p>
+<p>That is different from day-30 subscription revenue divided by spend. It is also different from a network’s modeled conversion value divided by spend. Keep those views separately named:</p>
+<ul class="list-disc pl-6"><li>Bucket-derived SKAN ROAS: revenue estimated from the conversion values actually available, using a documented decoding rule.</li><li>Platform or MMP modeled ROAS: the vendor’s estimate, using its declared inputs and methodology.</li><li>Business revenue view: revenue recorded in your own subscription, purchase or finance systems, with its own cohort and attribution limits.</li></ul>
+<p>This separation is our recommended reporting convention. It helps stop a change in measurement method from being mistaken for a change in campaign economics. Google also explains that SKAN reporting and Google’s modeled App campaign reporting can disagree because their underlying logic differs. <a class="underline text-[#27F17B]" href="https://support.google.com/google-ads/answer/10625151?hl=en">Google’s iOS reporting guidance</a></p>
+<p>For each view, record the currency, date basis, revenue window, refund treatment and whether revenue is gross customer payments or net proceeds. A report labeled simply “ROAS” leaves too many ways for two teams to reach different answers.</p>
+<h2 class="text-xl font-bold text-white pt-6">1 Check the framework and postback maturity</h2>
+<p>Record the iOS versions, attribution framework, SDK version and ad-network integration in use. Apple now documents AdAttributionKit alongside SKAdNetwork and describes how they work together. Do not relabel an implementation as “SKAN 5” without an actual supporting specification. For an app using both frameworks, follow the current integration instructions for the participating networks and SDKs. <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/adattributionkit/adattributionkit-skadnetwork-interoperability">Apple’s interoperability guide</a></p>
+<p>For eligible SKAN 4 attribution, Apple defines three conversion windows measured from first launch:</p>
+<ul class="list-disc pl-6"><li>Days 0–2: first window; fine or coarse information can be available, subject to the postback data tier.</li><li>Days 3–7: second window; coarse information can be available.</li><li>Days 8–35: third window; coarse information can be available.</li></ul>
+<p>Without an early lock, the first postback has a further random 24–48-hour delay; later postbacks have a 24–144-hour delay. Locking finalizes that window’s value earlier and prevents further updates within the same window. Eligibility and privacy conditions still apply. <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/storekit/receiving-postbacks-in-multiple-conversion-windows?changes=_8%2C_8">Apple’s conversion-window reference</a></p>
+<p>Operationally, mark recent cohorts as incomplete. Compare cohorts at the same age and with the same lock policy. A report generated immediately after a spend increase cannot yet answer a 35-day revenue question.</p>
+<h2 class="text-xl font-bold text-white pt-6">2 Find the schema that was active for the cohort</h2>
+<p>Ask for the actual mapping used by the installed app, not a slide describing the intended funnel. Keep a small schema register:</p>
+<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr><th class="border border-slate-700 p-3 text-left">Field</th><th class="border border-slate-700 p-3 text-left">What to record</th></tr>
+</thead><tbody><tr><td class="border border-slate-700 p-3 text-left">Version</td><td class="border border-slate-700 p-3 text-left">Schema name, release date and effective cohort</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Owner</td><td class="border border-slate-700 p-3 text-left">Team and system responsible for conversion-value updates</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Mapping</td><td class="border border-slate-700 p-3 text-left">Fine values, coarse values and their exact event or revenue conditions</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Revenue basis</td><td class="border border-slate-700 p-3 text-left">Currency, boundaries and whether a value represents incremental or cumulative revenue</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Timing</td><td class="border border-slate-700 p-3 text-left">Window-specific logic and any early locks</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Distribution</td><td class="border border-slate-700 p-3 text-left">Which networks receive the schema and how receipt was checked</td></tr>
+</tbody></table>
+</div>
+<p>Use this register as an operating control, not as a platform requirement. If a schema changes, retain the old decoding rules for earlier cohorts. Otherwise the same code can silently acquire a different financial meaning.</p>
+<p>For Google App campaigns, there is an important current distinction. Google Analytics allows configuration of fine and coarse SKAN values. Google’s separate Ads integration guide, reviewed on 3 October 2026, states that its conversion modeling uses fine values and does not currently support SKAN 4 coarse values. Configuring a coarse schema in GA4 therefore does not establish that Google Ads uses those values for optimization. Google also recommends choosing one place to set up the schema. <a class="underline text-[#27F17B]" href="https://support.google.com/analytics/answer/13165271?hl=en-EN">GA4 schema configuration</a>, <a class="underline text-[#27F17B]" href="https://support.google.com/google-ads/answer/13286653?hl=en">Google Ads schema integration</a></p>
+<p>Check the event selected for bidding, its conversion settings and the documented integration for your account. Save the answer with the date; product support can change.</p>
+<h2 class="text-xl font-bold text-white pt-6">3 Keep missing values separate from zero revenue</h2>
+<p>Apple’s postbacks can contain a fine value or a coarse value, rather than both. Availability depends partly on privacy conditions. A missing value does not identify a non-paying customer. A code your schema explicitly maps to no observed purchase has a different meaning. <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/storekit/identifying-the-parameters-in-install-validation-postbacks">Apple’s postback parameter reference</a></p>
+<p>In your audit, separate:</p>
+<ul class="list-disc pl-6"><li>Postbacks with a decoded revenue bucket.</li><li>Postbacks with a non-revenue milestone, such as trial started.</li><li>Postbacks without a usable conversion value.</li><li>Records that cannot be decoded because the schema version is unknown.</li></ul>
+<p>Report the size of each group. Investigate changes against the previous comparable cohort, SDK release and schema release. A higher missing-value share is a reason to diagnose the measurement; it is not evidence on its own that customer value fell.</p>
+<p>Avoid universal spending thresholds advertised as a way to unlock fine values. Apple describes privacy tiers, not a dollar-per-day guarantee. Treat campaign consolidation as a testable operating choice and inspect the resulting data rather than promising that a particular budget will remove suppression.</p>
+<h2 class="text-xl font-bold text-white pt-6">4 Translate revenue buckets without disguising assumptions</h2>
+<p>For a revenue-based schema, the basic calculation is:</p>
+<p>Estimated represented revenue = sum of each available bucket’s postback count multiplied by the revenue assigned to that bucket.</p>
+<p>Divide that estimate by the spend associated with the same reporting cohort. Document how your reporting system associates delayed postbacks with campaign spend; received-date totals alone are not a complete cohort definition.</p>
+<p>Here is an arithmetic example, not a recommended schema or a customer result. Assume three first-window buckets are cumulative revenue bands, with no overlapping counts:</p>
+<div class="overflow-x-auto"><table class="w-full text-sm border-collapse"><thead><tr><th class="border border-slate-700 p-3 text-left">Decoded bucket</th><th class="border border-slate-700 p-3 text-left">Available postbacks</th><th class="border border-slate-700 p-3 text-left">Assumed representative revenue</th><th class="border border-slate-700 p-3 text-left">Estimated represented revenue</th></tr>
+</thead><tbody><tr><td class="border border-slate-700 p-3 text-left">$0.01 to $9.99</td><td class="border border-slate-700 p-3 text-left">100</td><td class="border border-slate-700 p-3 text-left">$5.00</td><td class="border border-slate-700 p-3 text-left">$500.00</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">$10.00 to $24.99</td><td class="border border-slate-700 p-3 text-left">40</td><td class="border border-slate-700 p-3 text-left">$17.50</td><td class="border border-slate-700 p-3 text-left">$700.00</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">$25.00 to $49.99</td><td class="border border-slate-700 p-3 text-left">10</td><td class="border border-slate-700 p-3 text-left">$37.50</td><td class="border border-slate-700 p-3 text-left">$375.00</td></tr>
+<tr><td class="border border-slate-700 p-3 text-left">Total</td><td class="border border-slate-700 p-3 text-left">150</td><td class="border border-slate-700 p-3 text-left">Not applicable</td><td class="border border-slate-700 p-3 text-left">$1,575.00</td></tr>
+</tbody></table>
+</div>
+<p>With $3,000 of associated media spend, the result is 52.5%. The representative values are rounded midpoint assumptions. The result estimates revenue represented by those 150 records; it does not prove that the acquired cohort earned exactly $1,575.</p>
+<p>If another 30 records lack a usable value, show them separately. Setting them to zero would turn missing information into a revenue claim. Increasing all bucket counts to compensate would introduce a different assumption. Either choice needs a documented model and validation, not a hidden spreadsheet adjustment.</p>
+<p>If a coarse value means “trial started,” it has no direct dollar amount. Estimating future revenue requires a separate model of trial conversion, timing and customer value. Label the output as modeled revenue and validate it against mature business cohorts. A milestone count alone is not observed ROAS.</p>
+<h2 class="text-xl font-bold text-white pt-6">5 Check for duplicate and incompatible records</h2>
+<p>Confirm which source supplies each report: the ad network, the MMP, your own endpoint or a combination. Apple can send the app developer a copy of a winning postback, so two delivery routes can carry the same underlying record. Apple provides a transaction identifier for deduplicating install-validation postbacks. <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/storekit/receiving-ad-attributions-and-postbacks?changes=__7&amp;language=objc">Developer postback copies</a>, <a class="underline text-[#27F17B]" href="https://developer.apple.com/documentation/storekit/identifying-the-parameters-in-install-validation-postbacks">postback identifiers</a></p>
+<p>As an audit rule, keep winning attribution separate from nonwinning records, keep sequence windows separate and do not count every later postback as another install. Also check whether later-window revenue buckets are incremental or cumulative before adding them together. Adding cumulative estimates across windows can count the same revenue repeatedly.</p>
+<p>Do not assume that an MMP webhook, a raw SKAN postback and an ad-platform conversion API accept interchangeable payloads. A backup delivery design needs its own supported destination, consent treatment, duplicate handling and end-to-end test. Documenting a backup endpoint does not demonstrate that it preserves attribution or bidding behavior.</p>
+<h2 class="text-xl font-bold text-white pt-6">6 Produce a decision the media team can use</h2>
+<p>Close the audit with one of three outcomes:</p>
+<p>Usable for the stated purpose. The cohort is mature enough, schema versions are known, records are decoded consistently and estimates are clearly labeled. This supports using the report within its stated limits; it does not prove the campaign will remain profitable.</p>
+<p>Wait for maturity. The configuration is understood, but the required window has not finished or postbacks are still arriving. Put a review date against the cohort rather than treating the current total as final.</p>
+<p>Repair before interpreting. The schema is missing, events are duplicated, currency is inconsistent, an integration is unsupported or the app release differs from the documented setup. Name the owner, corrective action and evidence needed to close the issue.</p>
+<p>Keep account funding and permissions in the same launch review, but assign them separately. A measurement defect needs a measurement owner. A billing interruption needs the account or finance owner. Changing the ad-account arrangement does not by itself repair conversion-value logic.</p>
+<h2 class="text-xl font-bold text-white pt-6">Questions to settle before the next budget change</h2>
+<ul class="list-disc pl-6"><li>Which cohort and revenue horizon does the decision use?</li><li>Which schema version applies, and who can verify the live implementation?</li><li>How much of the report is decoded, modeled, missing or immature?</li><li>Are currency, spend dates and revenue definitions aligned?</li><li>Are repeated deliveries and postback windows handled correctly?</li><li>Does each platform support the signals the team expects it to use?</li><li>Who approves the measurement, account-access and funding parts of the plan?</li></ul>
+<h2 class="text-xl font-bold text-white pt-6">Frequently asked questions</h2>
+<h3 class="text-xl font-bold text-white pt-6">Can I calculate ROAS from coarse conversion values</h3>
+<p>You can derive an estimate if the values map to revenue, or apply an explicitly validated revenue model to milestones. Explain the mapping and uncertainty. “High” has no universal monetary value.</p>
+<h3 class="text-xl font-bold text-white pt-6">Should every report agree with my MMP</h3>
+<p>Start by comparing scope, attribution logic, cohort age and revenue definitions. A mismatch is a diagnostic clue. It is not enough on its own to identify which implementation is wrong.</p>
+<h3 class="text-xl font-bold text-white pt-6">Does an agency ad account improve SKAN data quality</h3>
+<p>An account arrangement may change access, funding and operational responsibility. Evaluate those terms separately from the attribution implementation. Ask for evidence of the actual schema and supported data flow before accepting any measurement claim.</p>
+<h2 class="text-xl font-bold text-white pt-6">Discuss your setup</h2>
+<p>If your team is reviewing managed app-ad infrastructure, bring the measurement and account dependencies into the same conversation. Share your App Store URL, platforms, approximate monthly UA spend, MMP or Firebase setup, and the specific issue you need to resolve. Keep credentials and user-level event exports out of the first message.</p>
+<p><a class="underline text-[#27F17B]" target="_blank" rel="noopener" href="https://wa.me/15083103096?text=Hi%2C%20I%20need%20mobile%20app%20UA%20infrastructure%20and%20SKAN%20redundancy.">Discuss your app setup on WhatsApp</a></p>
+<p>Confirm the proposed work and responsibilities in writing before making changes.</p>
+<p>Policy and documentation sources checked 3 October 2026. Recheck relevant platform guidance before implementation.</p>
+</div>
+</article>
 
   <footer class="border-t border-brand-border py-8 text-center text-xs text-slate-500">
     <p>&copy; 2026 Ad Spend Index &bull; An enterprise intelligence initiative by <a href="https://adsinfra.io" class="text-brand" style="min-height: 28px; display: inline-flex; align-items: center; padding: 2px 4px;">AdsInfra</a>.</p>

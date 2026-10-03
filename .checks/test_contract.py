@@ -1,4 +1,5 @@
 import os
+import json
 import threading
 import unittest
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -36,7 +37,7 @@ class WhatsAppContractTests(unittest.TestCase):
         if endpoint:
             cls.browser = driver.chromium.connect_over_cdp(endpoint)
         else:
-            cls.browser = driver.chromium.launch(headless=True)
+            cls.browser = driver.chromium.launch(headless=True, executable_path=os.environ.get("PLAYWRIGHT_EXECUTABLE_PATH"))
             cls.addClassCleanup(cls.browser.close)
 
     def open_page(self, path, viewport, sdk_present):
@@ -139,6 +140,38 @@ class WhatsAppContractTests(unittest.TestCase):
                     self.assertEqual(errors, [])
                 finally:
                     context.close()
+
+    def test_article_resources_navigation_returns_to_index(self):
+        context, page, errors = self.open_page(
+            "resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook.html",
+            VIEWPORTS[1], False,
+        )
+        page.get_by_role("navigation").get_by_role("link", name="Resources").click()
+        page.wait_for_load_state("domcontentloaded")
+        self.assertEqual(page.url, self.base_url + "/resources/")
+        self.assertEqual(page.locator("h1").count(), 1)
+        self.assertEqual(errors, [])
+
+    def test_roas_article_public_metadata_and_mobile_layout(self):
+        for viewport in VIEWPORTS:
+            context, page, errors = self.open_page(
+                "resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook.html",
+                viewport, False,
+            )
+            page.wait_for_load_state("networkidle")
+            self.assertEqual(page.locator("h1").inner_text(), "SKAdNetwork ROAS audit for iOS app campaigns")
+            canonical = page.locator('link[rel="canonical"]').get_attribute("href")
+            graph = json.loads(page.locator('script[type="application/ld+json"]').inner_text())["@graph"]
+            article = next(x for x in graph if x["@type"] == "TechArticle")
+            self.assertEqual(article["mainEntityOfPage"], canonical)
+            self.assertEqual(article["headline"], page.locator("h1").inner_text())
+            faq = next(x for x in graph if x["@type"] == "FAQPage")
+            for question in faq["mainEntity"]:
+                self.assertEqual(page.get_by_role("heading", name=question["name"], exact=True).count(), 1)
+                self.assertIn(question["acceptedAnswer"]["text"], page.locator("article").inner_text())
+            self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"), viewport[0])
+            self.assertEqual(errors, [])
+            context.close()
 
 
 if __name__ == "__main__":
