@@ -49,3 +49,14 @@ test('missing and symlinked public sources cannot be deployed', () => {
     assert.throws(() => readdirSync(resolve(root, '.public-dist')), { code: 'ENOENT' });
   }
 });
+test('rejects allowlist entries with a dot-prefixed path segment at any depth', () => {
+  for (const entry of ['.env', 'resources/.env', 'resources/.git/config', 'resources/../package.json']) {
+    const root = fixture();
+    const target = resolve(root, entry);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, 'synthetic private sentinel');
+    writeFileSync(resolve(root, 'scripts/public-assets.json'), JSON.stringify([...assets, entry]));
+    assert.notEqual(run(root).status, 0, entry);
+    assert.throws(() => readdirSync(resolve(root, '.public-dist')), { code: 'ENOENT' });
+  }
+});

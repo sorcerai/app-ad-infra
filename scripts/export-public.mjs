@@ -7,7 +7,7 @@ const output = resolve(process.argv[2] || resolve(root, '.public-dist'));
 const files = JSON.parse(readFileSync(resolve(root, 'scripts/public-assets.json'), 'utf8'));
 if (output === root || root.startsWith(output + sep)) throw new Error('Output cannot contain the repository');
 const sources = files.map(file => {
-  if (file.startsWith('.') || file.split('/').includes('..')) throw new Error('Invalid public path');
+  if (file.split('/').some(segment => segment.startsWith('.'))) throw new Error('Invalid public path');
   const source = resolve(root, file);
   if (!lstatSync(source).isFile() || lstatSync(source).isSymbolicLink() || !realpathSync(source).startsWith(root + sep)) throw new Error('Public source must be a regular repository file: ' + file);
   return source;

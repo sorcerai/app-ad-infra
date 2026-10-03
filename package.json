@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Enterprise App & Mobile App Ad Infrastructure for iOS & Android User Acquisition",
   "scripts": {
-    "deploy": "wrangler pages deploy .public-dist --project-name=app-ad-infra",
+    "deploy": "wrangler pages deploy .public-dist",
     "submit:indexnow": "node scripts/indexnow-submit.mjs",
     "postdeploy": "npm run submit:indexnow",
     "build": "node scripts/export-public.mjs",
