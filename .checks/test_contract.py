@@ -1,4 +1,5 @@
 import os
+import hashlib
 import json
 import threading
 import unittest
@@ -172,6 +173,55 @@ class WhatsAppContractTests(unittest.TestCase):
             self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"), viewport[0])
             self.assertEqual(errors, [])
             context.close()
+
+    def test_central_intent_preserves_navigation_and_bounds_attribution(self):
+        # Execute the restored public beacon, intercepting every external call.
+        paths = ("index.html", "calculator.html", "skan-audit.html",
+                 "resources/index.html",
+                 "resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook.html")
+        for path in paths:
+            for mode in ("success", "throw", "missing"):
+                with self.subTest(path=path, mode=mode):
+                    context, page, errors = self.open_page(path, VIEWPORTS[0], False)
+                    try:
+                        script = "window.__intents = [];"
+                        if mode == "success":
+                            script += "navigator.sendBeacon = (url, blob) => { const intent = {url}; window.__intents.push(intent); blob.text().then(text => { intent.payload = JSON.parse(text); }); return true; };"
+                        elif mode == "throw":
+                            script += "navigator.sendBeacon = () => { throw new Error('Unavailable'); };"
+                        else:
+                            script += "navigator.sendBeacon = undefined;"
+                        context.add_init_script(script)
+                        page.goto(f"{self.base_url}/{path}?utm_source=" + "x" * 140 + "&utm_campaign=review", wait_until="domcontentloaded")
+                        page.locator("h1").click()
+                        self.assertEqual(page.evaluate("window.__intents"), [])
+                        link = page.locator('a[href^="https://wa.me/"]:visible').first
+                        href = link.get_attribute("href")
+                        link.evaluate("element => { const child = document.createElement('span'); child.textContent = element.textContent; element.replaceChildren(child); }")
+                        with page.expect_popup() as popup_info:
+                            link.locator("span").click()
+                        popup = popup_info.value
+                        popup.wait_for_load_state("domcontentloaded")
+                        self.assertEqual(popup.url, href)
+                        popup.close()
+                        if mode == "success":
+                            page.wait_for_function("window.__intents.length === 1 && 'payload' in window.__intents[0]")
+                            intent = page.evaluate("window.__intents[0]")
+                            self.assertEqual(intent["url"], "https://adsinfra.io/api/intent")
+                            self.assertEqual(intent["payload"], {"cta_id": "whatsapp", "site": "app", "path": "/" + path, "utm_source": "x" * 120, "utm_campaign": "review"})
+                        self.assertEqual(errors, [])
+                    finally:
+                        context.close()
+
+
+class PreservedPublicationTests(unittest.TestCase):
+    def test_five_new_public_pages_are_exact_preserved_bytes(self):
+        # These files are the explicitly owned publication byte contract,
+        # not a proxy for JS behavior (which is executed above).
+        manifest = json.loads((ROOT / ".checks" / "preserved-pages.json").read_text())
+        for name, digest in manifest.items():
+            with self.subTest(page=name):
+                self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), digest)
 
 
 if __name__ == "__main__":

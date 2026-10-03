@@ -38,6 +38,47 @@
   </script>
 
   <script defer src="https://search-ops-beacon.aria-24d.workers.dev/analytics/v2.js" data-site="adsinfraforapps.com"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a SKAdNetwork conversion schema audit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A SKAdNetwork conversion schema audit is a structured review of how an iOS app maps in-app events to Apple's 6-bit conversion values, verifying the 0-63 fine-grained mapping, the coarse-grained fallback, and Window 2/3 postback ingestion."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does SKAdNetwork 4.0 affect ROAS reporting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SKAdNetwork 4.0 ties postback granularity to crowd anonymity: low-volume campaigns get coarse or null conversion values instead of exact revenue tiers, which systematically understates ROAS for subscription and gaming apps."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What crowd anonymity threshold unlocks fine-grained SKAdNetwork postbacks?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Apple assigns each SKAdNetwork 4.0 campaign to a crowd anonymity tier (0 to 3) based on install volume; only the upper tiers return fine-grained 0-63 values. Apple does not publish the exact install counts, so operators use a practical floor of roughly $1,500+ in daily spend per SKAN campaign ID and consolidate creative testing to stay above it."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "SKAdNetwork 4.0 vs 3.0: what changed for app advertisers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "SKAdNetwork 4.0 added up to three postbacks covering days 0-2, 3-7, and 8-35, coarse-grained conversion values, and crowd anonymity tiers; 3.0 offered a single postback and one conversion value."
+        }
+      }
+    ]
+  }
+  </script>
   <script>
     document.addEventListener("click", function(e) {
       var target = e.target && e.target.closest ? e.target.closest("a[href*=\"wa.me\"]") : null;
@@ -78,7 +119,50 @@
       <p class="text-slate-400 text-sm">
         Evaluate your conversion value configuration, coarse-grained mapping, and multi-window retention tracking to prevent ROAS postback blindness.
       </p>
+      <p class="text-xs font-mono text-slate-500 mt-3">Last verified: 2026-09-24</p>
     </div>
+
+    <!-- SEO content: what the audit checks and why it matters -->
+    <section class="max-w-2xl mx-auto mb-12 text-left space-y-8">
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        SKAdNetwork 4.0 supports up to three postbacks per install and 64 fine-grained conversion values (0&ndash;63) &mdash; but only when a campaign clears Apple&rsquo;s crowd anonymity tiers. As of September 2026, campaigns that fall below the volume threshold receive only coarse values (low, medium, high) or null, leaving Meta, TikTok, and Google blind to downstream purchase revenue. This audit checks the four configuration failures that cause that blindness.
+      </p>
+
+      <div>
+        <h2 class="text-lg font-bold text-white mb-2">What is a SKAdNetwork conversion schema audit?</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          A SKAdNetwork conversion schema audit is a structured review of how an iOS app maps in-app events to Apple&rsquo;s 6-bit conversion values. It verifies the 0&ndash;63 fine-grained mapping, the coarse-grained fallback (low, medium, high), and whether Window 2 and Window 3 postbacks are ingested &mdash; so a single misconfigured mapping does not silently zero out ROAS reporting.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-white mb-2">How does SKAdNetwork 4.0 affect ROAS reporting?</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          SKAdNetwork 4.0 ties postback granularity to crowd anonymity: low-volume campaigns get coarse or null conversion values instead of exact revenue tiers. Ad platforms then optimize against blurred signals, which systematically understates ROAS for subscription and gaming apps. The fix is spend concentration per campaign ID plus a coarse-value mapping bound to real funnel milestones.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-white mb-2">What crowd anonymity threshold unlocks fine-grained SKAdNetwork postbacks?</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          Apple assigns each SKAdNetwork 4.0 campaign to a crowd anonymity tier (0 to 3) based on install volume; only the upper tiers return fine-grained 0&ndash;63 values. Apple does not publish the exact install counts, so operators use a practical floor &mdash; roughly $1,500+ in daily spend per SKAN campaign ID &mdash; and consolidate creative testing to stay above it.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-white mb-2">SKAdNetwork 4.0 vs 3.0: what changed for app advertisers?</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          SKAdNetwork 4.0 added multiple postbacks (up to three, covering days 0&ndash;2, 3&ndash;7, and 8&ndash;35), coarse-grained conversion values, and crowd anonymity tiers &mdash; 3.0 offered a single postback and one conversion value. For advertisers, 4.0 means longer attribution windows but stricter volume requirements: fragment spend and the extra postbacks arrive empty.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-white mb-2">What does a SKAdNetwork MMP redundancy solution look like?</h2>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          A SKAdNetwork redundancy solution pairs the MMP&rsquo;s SKAN ingestion with a second, independent event pipeline: every in-app event streams to the MMP and to a first-party warehouse simultaneously. If the MMP endpoint drops or desyncs, fallback webhooks re-route purchase signals straight to Meta CAPI or Google&rsquo;s measurement APIs &mdash; read the full architecture in our <a href="/resources/mobile-app-ua-infrastructure-skan-mmp-and-uac-scaling-playbook" class="text-brand hover:underline">mobile app UA infrastructure playbook</a>.
+        </p>
+      </div>
+    </section>
 
     <!-- Diagnostic Checklist -->
     <div class="p-6 sm:p-8 rounded-2xl bg-brand-surface border border-brand-border space-y-6">

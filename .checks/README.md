@@ -10,7 +10,9 @@ python -m unittest discover -s .checks -p 'test_contract.py' -v
 The tests serve local HTML, intercept WhatsApp destinations and block production
 analytics/intent requests. Existing secondary-page inquiry contracts run with
 and without a synthetic SDK. Resource tests check real navigation, rendered
-headings, canonical/schema agreement, FAQ agreement and mobile width.
+headings, canonical/schema agreement, FAQ agreement and mobile width. Central-intent
+tests and the preserved-page hash manifest (`preserved-pages.json`) are described in
+`RECONCILIATION.md`.
 
 The replacement retains the existing extensionless resource URL. On 3 October
 2026, read-only deployed checks returned 308 from `/resources/index` to
