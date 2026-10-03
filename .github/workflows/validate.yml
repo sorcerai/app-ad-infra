@@ -28,3 +28,6 @@ jobs:
 
       - name: Run secondary-page browser contracts
         run: python -m unittest discover -s .checks -p 'test_contract.py' -v
+
+      - name: Verify public export contract
+        run: node --test .checks/test_export.mjs
